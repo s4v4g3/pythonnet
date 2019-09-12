@@ -466,6 +466,18 @@ namespace Python.Runtime
         }
 
         [ModuleFunction]
+        public static void EnableAutomaticListConversion()
+        {
+            Converter.ListConversionEnabled = true;
+        }
+
+        [ModuleFunction]
+        public static void DisableAutomaticListConversion()
+        {
+            Converter.ListConversionEnabled = false;
+        }
+
+        [ModuleFunction]
         public static int _AtExit()
         {
             return Runtime.AtExit();

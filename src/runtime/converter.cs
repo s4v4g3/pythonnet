@@ -48,6 +48,11 @@ namespace Python.Runtime
             typeType = typeof(Type);
         }
 
+        internal static bool ListConversionEnabled
+        {
+            get; set;
+        }
+
 
         /// <summary>
         /// Given a builtin Python type, return the corresponding CLR type.
@@ -135,19 +140,22 @@ namespace Python.Runtime
                 return result;
             }
 
-			if (value is IList && !(value is INotifyPropertyChanged) && value.GetType().IsGenericType)
-			{
-                using (var resultlist = new PyList())
+            if (ListConversionEnabled)
+            {
+                if (value is IList && !(value is INotifyPropertyChanged) && value.GetType().IsGenericType)
                 {
-                    foreach (object o in (IEnumerable)value)
+                    using (var resultlist = new PyList())
                     {
-                        using (var p = new PyObject(ToPython(o, o?.GetType())))
+                        foreach (object o in (IEnumerable)value)
                         {
-                            resultlist.Append(p);
+                            using (var p = new PyObject(ToPython(o, o?.GetType())))
+                            {
+                                resultlist.Append(p);
+                            }
                         }
+                        Runtime.XIncref(resultlist.Handle);
+                        return resultlist.Handle;
                     }
-                    Runtime.XIncref(resultlist.Handle);
-                    return resultlist.Handle;
                 }
             }
 
