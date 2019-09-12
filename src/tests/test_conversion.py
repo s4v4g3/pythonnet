@@ -5,7 +5,7 @@
 from __future__ import unicode_literals
 import System
 import pytest
-from Python.Test import ConversionTest, UnicodeString
+from Python.Test import ConversionTest, UnicodeString, MyListContainerClass
 
 from ._compat import indexbytes, long, unichr, text_type, PY2, PY3
 
@@ -701,3 +701,39 @@ def test_sbyte_array_conversion():
     array = ob.SByteArrayField
     for i, _ in enumerate(value):
         assert array[i] == indexbytes(value, i)
+
+def test_list_non_conversion():
+    my_test_class = MyListContainerClass()
+    my_list = my_test_class.MyList
+    assert (my_list.Count == 0)
+
+    my_list.Add(4)
+
+    my_list = my_test_class.MyList
+    assert (my_list.Count == 1)
+    
+    with pytest.raises(TypeError):
+        assert (len(my_list) == 0)
+    
+    import clr
+    clr.EnableAutomaticListConversion()
+    my_test_class = MyListContainerClass()
+    my_list = my_test_class.MyList
+    assert(len(my_list) == 0)
+    my_list.append(3)
+    assert(len(my_list) == 1)
+    my_list = my_test_class.MyList
+    assert(len(my_list) == 0)
+    with pytest.raises(AttributeError):
+        assert (my_list.Count == 0)
+    
+    clr.DisableAutomaticListConversion()
+    my_test_class = MyListContainerClass()
+    my_list = my_test_class.MyList
+    assert (my_list.Count == 0)
+
+    my_list.Add(4)
+
+    my_list = my_test_class.MyList
+    assert (my_list.Count == 1)
+    

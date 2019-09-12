@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Python.Test
 {
     /// <summary>
@@ -73,6 +75,16 @@ namespace Python.Test
         public override string ToString()
         {
             return value;
+        }
+    }
+
+    public class MyListContainerClass
+    {
+        private List<double> _myList = new List<double>();
+
+        public List<double> MyList
+        {
+            get { return _myList; }
         }
     }
 }
